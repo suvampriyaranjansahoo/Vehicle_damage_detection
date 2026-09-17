@@ -37,7 +37,7 @@ def test_valid_image_prediction(monkeypatch):
         "gradcam_overlay_base64": base64.b64encode(b"fake").decode(),
     }
     monkeypatch.setattr("app.main.predict", lambda image, classes: fake)
-    monkeypatch.setattr("app.main.log_prediction", lambda result: None)
+    monkeypatch.setattr("app.main.log_prediction", lambda result, **kwargs: None)
     buf = BytesIO()
     Image.new("RGB", (64, 64), "white").save(buf, format="JPEG")
     r = client.post("/predict", files={"file": ("car.jpg", buf.getvalue(), "image/jpeg")})

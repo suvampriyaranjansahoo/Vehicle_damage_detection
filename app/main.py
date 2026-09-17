@@ -1,4 +1,6 @@
 import logging
+import time
+import uuid
 from io import BytesIO
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
@@ -63,6 +65,7 @@ def health():
         "model_configured": bool(MODEL_PATH.exists() or MODEL_URL),
         "classes": len(load_class_names(CLASS_NAMES_PATH)),
         "model_version": MODEL_VERSION,
+        "max_upload_bytes": MAX_UPLOAD_BYTES,
     }
 
 
@@ -90,13 +93,18 @@ def monitoring_summary(bucket_seconds: int = 3600):
 
 @app.post("/predict")
 async def predict_endpoint(file: UploadFile = File(...)):  # noqa: B008 -- standard FastAPI DI pattern
+    request_id = str(uuid.uuid4())
+    started = time.perf_counter()
     payload = _read_bounded_upload(file)
     image = _validate_upload(file, payload)
     try:
         classes = load_class_names(CLASS_NAMES_PATH)
         result = predict(image, classes)
         result["model_version"] = MODEL_VERSION
-        log_prediction(result)
+        result["request_id"] = request_id
+        result["input"] = {"filename": file.filename, "content_type": file.content_type, "bytes": len(payload), "width": image.width, "height": image.height}
+        result["latency_ms"] = round((time.perf_counter() - started) * 1000, 2)
+        log_prediction(result, latency_ms=result["latency_ms"])
         return result
     except FileNotFoundError as exc:
         LOGGER.exception("Model artifact missing")

@@ -252,3 +252,18 @@ This package went through a pass that actually executed the code rather than jus
 
 ## Disclaimer
 This is an educational/portfolio computer-vision system. Predictions, severity estimates, Grad-CAM explanations, and repair-cost ranges should not be used as a substitute for a professional vehicle inspection or repair quotation.
+
+## Production-hardening additions
+
+The updated version adds several safeguards beyond the baseline evaluation pipeline:
+
+- **Uncertainty-aware inference:** top-3 probabilities, top-vs-second margin, normalized entropy, configurable confidence/margin/entropy thresholds, and a `review_recommended` flag.
+- **Traceable predictions:** every successful prediction receives a UUID request ID, input metadata, model version, and measured latency.
+- **Stronger monitoring:** aggregate average confidence, review rate, latency, prediction volume, and class counts; malformed or out-of-range log records are ignored safely.
+- **API edge-case coverage:** invalid extensions, empty uploads, corrupt images, and valid WEBP uploads are covered by tests.
+- **Model card:** `docs/MODEL_CARD.md` records intended use, verified metrics, limitations, uncertainty semantics, and reproducibility details.
+- **Architecture documentation:** `docs/ARCHITECTURE.md` documents the runtime request flow and deployment topology.
+
+### Important interpretation rule
+
+The uncertainty flag is a **review-routing heuristic**, not a calibrated probability that a prediction is wrong. Similarly, Grad-CAM, severity, and repair-cost outputs are decision-support/demo features and must not be represented as engineering, insurance, or medical-grade measurements.

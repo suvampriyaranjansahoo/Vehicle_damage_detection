@@ -38,6 +38,9 @@ def test_monitoring_empty_state(monkeypatch, tmp_path):
     monkeypatch.setattr(monitoring, "LOG_PATH", Path(tmp_path) / "predictions.jsonl")
     assert summarize_predictions() == {
         "total_predictions": 0,
+        "review_recommended": 0,
+        "avg_confidence": None,
+        "avg_latency_ms": None,
         "buckets": [],
         "class_counts": {},
     }

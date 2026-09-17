@@ -23,3 +23,7 @@ MODEL_VERSION = os.getenv("MODEL_VERSION", "1.0.0")
 PREDICTION_LOG_PATH = _rooted_path(
     os.getenv("PREDICTION_LOG_PATH", ""), ROOT / "artifacts" / "predictions.jsonl"
 )
+
+CONFIDENCE_THRESHOLD = float(os.getenv("CONFIDENCE_THRESHOLD", "0.60"))
+MARGIN_THRESHOLD = float(os.getenv("MARGIN_THRESHOLD", "0.15"))
+ENTROPY_THRESHOLD = float(os.getenv("ENTROPY_THRESHOLD", "0.75"))
