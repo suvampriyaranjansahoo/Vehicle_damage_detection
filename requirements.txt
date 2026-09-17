@@ -1,0 +1,26 @@
+fastapi==0.115.12
+uvicorn[standard]==0.34.2
+python-multipart==0.0.20
+pydantic==2.11.4
+Pillow==11.2.1
+numpy==1.26.4
+opencv-python-headless==4.11.0.86
+scikit-learn==1.6.1
+matplotlib==3.10.1
+pandas==2.2.3
+tensorflow==2.16.1
+streamlit==1.44.1
+requests==2.32.3
+huggingface-hub==0.30.2
+boto3==1.37.38
+mlflow==2.21.3
+pytest==8.3.5
+httpx==0.28.1
+ruff==0.11.5
+
+reportlab==4.3.1
+
+# Dataset preparation only (scripts/download_dataset.py, scripts/preprocess_dataset.py) --
+# not needed to run the API/UI, only to fetch and clean the training data.
+kaggle==2.2.4
+imagehash==4.3.2

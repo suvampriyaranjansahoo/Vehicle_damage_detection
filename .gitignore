@@ -1,0 +1,15 @@
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.venv/
+.env
+*.pyc
+artifacts/*.h5
+artifacts/*.keras
+model/*.h5
+model/*.keras
+model/*.onnx
+training_runs/
+mlruns/
+*.log
+.DS_Store

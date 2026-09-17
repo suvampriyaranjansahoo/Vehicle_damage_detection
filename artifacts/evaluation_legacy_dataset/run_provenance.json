@@ -1,0 +1,16 @@
+{
+  "dataset_archive": "Vechile Dataset.zip",
+  "rows": 1594,
+  "image_files": 1512,
+  "unique_image_contents": 1505,
+  "exact_duplicate_contents": 7,
+  "split_seed": 42,
+  "split_sizes": {
+    "train": 1053,
+    "validation": 226,
+    "test": 226
+  },
+  "model": "existing supplied car_damage_model.h5 recovered into car_damage_model.keras",
+  "metrics_file": "artifacts/evaluation_legacy_dataset/metrics.json",
+  "warning": "Existing model's original training split is unknown; metrics are diagnostic held-out results, not a new leakage-free training benchmark."
+}

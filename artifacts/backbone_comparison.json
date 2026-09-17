@@ -1,0 +1,18 @@
+[
+  {
+    "backbone": "MobileNetV2",
+    "accuracy": 0.6157894736842106,
+    "macro_f1": 0.5774254954507055,
+    "inference_ms_per_image": 50.207402015791416,
+    "training_time_seconds": 66.91956310700016,
+    "model_size_mb": 9.728223
+  },
+  {
+    "backbone": "EfficientNetB0",
+    "accuracy": 0.2,
+    "macro_f1": 0.047619047619047616,
+    "inference_ms_per_image": 72.05608866842053,
+    "training_time_seconds": 75.58958997599984,
+    "model_size_mb": 17.152095
+  }
+]

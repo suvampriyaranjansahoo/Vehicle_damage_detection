@@ -1,0 +1,148 @@
+{
+  "evaluated_on": "artifacts/splits/test.csv",
+  "n_samples": 143,
+  "accuracy": 0.7832167832167832,
+  "macro_f1": 0.7734325166380914,
+  "weighted_f1": 0.7834359858750102,
+  "per_class": {
+    "bumper_dent": {
+      "precision": 0.875,
+      "recall": 0.7368421052631579,
+      "f1-score": 0.8,
+      "support": 19.0
+    },
+    "bumper_scratch": {
+      "precision": 0.6666666666666666,
+      "recall": 0.5,
+      "f1-score": 0.5714285714285714,
+      "support": 12.0
+    },
+    "door_dent": {
+      "precision": 0.7419354838709677,
+      "recall": 0.7931034482758621,
+      "f1-score": 0.7666666666666667,
+      "support": 29.0
+    },
+    "door_scratch": {
+      "precision": 0.6451612903225806,
+      "recall": 0.8695652173913043,
+      "f1-score": 0.7407407407407407,
+      "support": 23.0
+    },
+    "glass_shatter": {
+      "precision": 0.8,
+      "recall": 0.8,
+      "f1-score": 0.8,
+      "support": 20.0
+    },
+    "head_lamp": {
+      "precision": 1.0,
+      "recall": 0.75,
+      "f1-score": 0.8571428571428571,
+      "support": 20.0
+    },
+    "tail_lamp": {
+      "precision": 0.8571428571428571,
+      "recall": 0.9,
+      "f1-score": 0.8780487804878049,
+      "support": 20.0
+    }
+  },
+  "calibration": {
+    "expected_calibration_error": 0.0679,
+    "brier_score": 0.3293,
+    "reliability_bins": [
+      {
+        "range": [
+          0.0,
+          0.1
+        ],
+        "count": 0,
+        "avg_confidence": null,
+        "accuracy": null
+      },
+      {
+        "range": [
+          0.1,
+          0.2
+        ],
+        "count": 0,
+        "avg_confidence": null,
+        "accuracy": null
+      },
+      {
+        "range": [
+          0.2,
+          0.3
+        ],
+        "count": 3,
+        "avg_confidence": 0.2751,
+        "accuracy": 0.3333
+      },
+      {
+        "range": [
+          0.3,
+          0.4
+        ],
+        "count": 9,
+        "avg_confidence": 0.3483,
+        "accuracy": 0.3333
+      },
+      {
+        "range": [
+          0.4,
+          0.5
+        ],
+        "count": 9,
+        "avg_confidence": 0.4612,
+        "accuracy": 0.6667
+      },
+      {
+        "range": [
+          0.5,
+          0.6
+        ],
+        "count": 25,
+        "avg_confidence": 0.5479,
+        "accuracy": 0.6
+      },
+      {
+        "range": [
+          0.6,
+          0.7
+        ],
+        "count": 19,
+        "avg_confidence": 0.664,
+        "accuracy": 0.7895
+      },
+      {
+        "range": [
+          0.7,
+          0.8
+        ],
+        "count": 19,
+        "avg_confidence": 0.754,
+        "accuracy": 0.8421
+      },
+      {
+        "range": [
+          0.8,
+          0.9
+        ],
+        "count": 17,
+        "avg_confidence": 0.8568,
+        "accuracy": 0.8235
+      },
+      {
+        "range": [
+          0.9,
+          1.0
+        ],
+        "count": 42,
+        "avg_confidence": 0.9611,
+        "accuracy": 1.0
+      }
+    ],
+    "note": "Lower ECE and Brier score are better. ECE near 0 means confidence can be read at face value; a model that is e.g. 90% confident on average within a bin should be correct ~90% of the time in that bin."
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "evaluation_type": "legacy_existing_model_diagnostic",
+  "dataset_rows": 1594,
+  "deduplicated_unique_images": 1505,
+  "split": {
+    "method": "stratified 70/15/15",
+    "random_state": 42,
+    "test_images": 226
+  },
+  "classes": [
+    "bumper_dent",
+    "bumper_scratch",
+    "door_dent",
+    "door_scratch",
+    "glass_shatter",
+    "head_lamp",
+    "tail_lamp",
+    "unknown"
+  ],
+  "accuracy": 0.9778761061946902,
+  "macro_f1": 0.9751369157803287,
+  "weighted_f1": 0.9778142148840724,
+  "calibration": {
+    "expected_calibration_error": 0.047899699052878206,
+    "brier_score": 0.050526028619687816
+  },
+  "classification_report": {
+    "bumper_dent": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 19.0
+    },
+    "bumper_scratch": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 13.0
+    },
+    "door_dent": {
+      "precision": 0.9666666666666667,
+      "recall": 1.0,
+      "f1-score": 0.9830508474576272,
+      "support": 29.0
+    },
+    "door_scratch": {
+      "precision": 1.0,
+      "recall": 0.9130434782608695,
+      "f1-score": 0.9545454545454546,
+      "support": 23.0
+    },
+    "glass_shatter": {
+      "precision": 0.9047619047619048,
+      "recall": 0.95,
+      "f1-score": 0.926829268292683,
+      "support": 20.0
+    },
+    "head_lamp": {
+      "precision": 1.0,
+      "recall": 0.95,
+      "f1-score": 0.9743589743589743,
+      "support": 20.0
+    },
+    "tail_lamp": {
+      "precision": 1.0,
+      "recall": 0.95,
+      "f1-score": 0.9743589743589743,
+      "support": 20.0
+    },
+    "unknown": {
+      "precision": 0.9761904761904762,
+      "recall": 1.0,
+      "f1-score": 0.9879518072289156,
+      "support": 82.0
+    },
+    "accuracy": 0.9778761061946902,
+    "macro avg": {
+      "precision": 0.980952380952381,
+      "recall": 0.9703804347826086,
+      "f1-score": 0.9751369157803287,
+      "support": 226.0
+    },
+    "weighted avg": {
+      "precision": 0.9786557100716392,
+      "recall": 0.9778761061946902,
+      "f1-score": 0.9778142148840724,
+      "support": 226.0
+    }
+  },
+  "warning": "These metrics evaluate the existing shipped model on a deduplicated held-out split. The model's original training history/data split is unknown, so this must not be presented as a leakage-free retraining benchmark."
+}
