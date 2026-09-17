@@ -3,13 +3,13 @@ services:
     name: vehicle-damage-api
     env: docker
     dockerfilePath: ./Dockerfile
-    healthCheckPath: /health
+    healthCheckPath: /ready
     envVars:
       - key: MODEL_URL
         sync: false
       - key: HF_MODEL_ID
         sync: false
       - key: HF_MODEL_FILENAME
-        value: car_damage_model.h5
+        value: car_damage_model.keras
       - key: MAX_UPLOAD_BYTES
         value: "8388608"

@@ -1,14 +1,25 @@
 name: CI
-on: [push, pull_request]
+
+on:
+  push:
+  pull_request:
+
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-python@v5
-        with: {python-version: '3.11'}
-      - run: pip install -r requirements.txt
-      - run: ruff check .
-      - run: pytest -q
-      - name: Model smoke test
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Compile Python sources
+        run: python -m compileall -q app scripts tests
+      - name: Lint
+        run: ruff check .
+      - name: Unit and API tests
+        run: pytest -q
+      - name: Model artifact smoke test
         run: python scripts/smoke_test.py

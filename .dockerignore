@@ -2,8 +2,11 @@
 .github
 __pycache__
 .pytest_cache
+.ruff_cache
 .venv
+.env
 notebook_legacy.ipynb
-data/images
 training_runs
 mlruns
+.cache
+artifacts/predictions.jsonl

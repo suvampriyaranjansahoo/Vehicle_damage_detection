@@ -3,7 +3,9 @@ import time
 from collections import Counter
 from pathlib import Path
 
-LOG_PATH = Path("artifacts/predictions.jsonl")
+from .config import PREDICTION_LOG_PATH
+
+LOG_PATH = PREDICTION_LOG_PATH
 
 
 def log_prediction(result: dict) -> None:
@@ -11,17 +13,13 @@ def log_prediction(result: dict) -> None:
     record = {
         "timestamp": time.time(),
         "predicted_class": result["predicted_class"],
-        "confidence": result["confidence"],
+        "confidence": float(result["confidence"]),
     }
     with LOG_PATH.open("a", encoding="utf-8") as f:
         f.write(json.dumps(record) + "\n")
 
 
-def read_predictions(limit: int = 5000) -> list:
-    """Read the most recent `limit` logged predictions. Tolerant of a missing
-    log file (fresh deployment) and of any single malformed line (in case a
-    write is ever interrupted mid-line), since this feeds a dashboard, not a
-    correctness-critical path."""
+def read_predictions(limit: int = 5000) -> list[dict]:
     if not LOG_PATH.exists():
         return []
     records = []
@@ -31,28 +29,27 @@ def read_predictions(limit: int = 5000) -> list:
             if not line:
                 continue
             try:
-                records.append(json.loads(line))
+                record = json.loads(line)
+                if "timestamp" in record and "predicted_class" in record and "confidence" in record:
+                    records.append(record)
             except json.JSONDecodeError:
                 continue
     return records[-limit:]
 
 
 def summarize_predictions(bucket_seconds: int = 3600, limit: int = 5000) -> dict:
-    """Aggregate logged predictions into time buckets for a monitoring
-    dashboard: per-bucket average confidence and prediction count, plus an
-    overall per-class count. Bucketing (default hourly) keeps the payload
-    small even after months of traffic, instead of shipping every raw row
-    to the client."""
+    if bucket_seconds < 60 or bucket_seconds > 7 * 24 * 3600:
+        raise ValueError("bucket_seconds must be between 60 seconds and 7 days")
+
     records = read_predictions(limit=limit)
     if not records:
         return {"total_predictions": 0, "buckets": [], "class_counts": {}}
 
     class_counts = Counter(r["predicted_class"] for r in records)
-
-    bucketed: dict[int, list] = {}
-    for r in records:
-        bucket_key = int(r["timestamp"] // bucket_seconds) * bucket_seconds
-        bucketed.setdefault(bucket_key, []).append(r["confidence"])
+    bucketed: dict[int, list[float]] = {}
+    for record in records:
+        bucket_key = int(float(record["timestamp"]) // bucket_seconds) * bucket_seconds
+        bucketed.setdefault(bucket_key, []).append(float(record["confidence"]))
 
     buckets = [
         {

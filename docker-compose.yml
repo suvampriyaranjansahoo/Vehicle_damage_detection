@@ -3,11 +3,16 @@ services:
     build: .
     ports: ["8000:8000"]
     environment:
-      MODEL_PATH: /app/model/car_damage_model.h5
+      MODEL_PATH: /app/model/car_damage_model.keras
       MAX_UPLOAD_BYTES: 8388608
     volumes:
       - ./model:/app/model:ro
       - prediction_logs:/app/artifacts
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
   ui:
     build:
       context: .
@@ -15,6 +20,8 @@ services:
     ports: ["8501:8501"]
     environment:
       API_URL: http://api:8000
-    depends_on: [api]
+    depends_on:
+      api:
+        condition: service_healthy
 volumes:
   prediction_logs:

@@ -1,0 +1,29 @@
+{
+  "generated_for": "vehicle-damage-detection",
+  "artifacts": {
+    "model/car_damage_model.keras": {
+      "bytes": 11601460,
+      "sha256": "a27d43998bf9efd06fb675df3d058bfb43a5ef6a89ca9f90f03ad0be1e89cb3c"
+    },
+    "model/car_damage_model_finetuned.keras": {
+      "bytes": 25396822,
+      "sha256": "ddb5aa2669e7674c5a4be24a2c5708446dd66f31a1ef20ad29ffd8fd2d56b3b5"
+    },
+    "model/car_damage_model_legacy_recovered.keras": {
+      "bytes": 10282577,
+      "sha256": "26562779f719e2b1856699caa1cef96493a51656f392b8dadd7ab3ef15a3dd50"
+    },
+    "model/car_damage_model.h5": {
+      "bytes": 11384648,
+      "sha256": "3e4d3c484a0abbb1330cb164c07bf236524d87687e4149c669a053cb68b69f72"
+    },
+    "artifacts/mobile_netv2_frozen.keras": {
+      "bytes": 11601460,
+      "sha256": "a27d43998bf9efd06fb675df3d058bfb43a5ef6a89ca9f90f03ad0be1e89cb3c"
+    },
+    "artifacts/mobile_netv2_finetuned.keras": {
+      "bytes": 25396822,
+      "sha256": "ddb5aa2669e7674c5a4be24a2c5708446dd66f31a1ef20ad29ffd8fd2d56b3b5"
+    }
+  }
+}

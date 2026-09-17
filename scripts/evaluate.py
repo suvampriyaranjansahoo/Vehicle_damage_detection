@@ -22,6 +22,7 @@ from sklearn.metrics import (
 )
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
+from app.config import ROOT
 from app.labels import load_class_names
 
 
@@ -111,6 +112,8 @@ def main():
     args = p.parse_args()
 
     csv_path = Path(args.csv)
+    if not csv_path.is_absolute():
+        csv_path = ROOT / csv_path
     if csv_path.name == "data.csv":
         raise ValueError(
             "Refusing to evaluate against the full data.csv -- it includes training rows. "
@@ -118,9 +121,14 @@ def main():
         )
 
     out = Path(args.output)
+    if not out.is_absolute():
+        out = ROOT / out
     out.mkdir(parents=True, exist_ok=True)
     df = pd.read_csv(csv_path)
-    df["path"] = df["image"].map(lambda x: str(Path(args.image_root) / x))
+    image_root = Path(args.image_root)
+    if not image_root.is_absolute():
+        image_root = ROOT / image_root
+    df["path"] = df["image"].map(lambda x: str(image_root / x))
     missing = df.loc[~df["path"].map(lambda x: Path(x).is_file())]
     if len(missing):
         raise FileNotFoundError(f"{len(missing)} images missing; evaluation cannot run.")
@@ -129,8 +137,13 @@ def main():
         df, x_col="path", y_col="classes", target_size=(224, 224),
         batch_size=32, class_mode="categorical", shuffle=False,
     )
-    names = load_class_names(Path("class_names.json"))
-    model = tf.keras.models.load_model(args.model)
+    names = load_class_names(ROOT / "class_names.json")
+    model_path = Path(args.model)
+    if not model_path.is_absolute():
+        model_path = ROOT / model_path
+    model = tf.keras.models.load_model(model_path)
+    if tuple(model.output_shape)[-1] != len(names):
+        raise ValueError(f"Model output shape {model.output_shape} does not match {len(names)} class labels")
     probs = model.predict(gen, verbose=0)
     y_pred = np.argmax(probs, axis=1)
     y_true = gen.classes

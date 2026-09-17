@@ -4,12 +4,10 @@ __pycache__/
 .venv/
 .env
 *.pyc
-artifacts/*.h5
-artifacts/*.keras
-model/*.h5
-model/*.keras
-model/*.onnx
 training_runs/
 mlruns/
 *.log
 .DS_Store
+.cache/
+artifacts/predictions.jsonl
+# Keep deployable model artifacts under version control. They are required by the default Docker build.

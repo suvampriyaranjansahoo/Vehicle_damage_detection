@@ -10,56 +10,99 @@ from .config import (
     MAX_UPLOAD_BYTES,
     MODEL_PATH,
     MODEL_URL,
+    MODEL_VERSION,
 )
 from .inference import predict
 from .labels import load_class_names
+from .model_loader import get_model
 from .monitoring import log_prediction, summarize_predictions
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
 LOGGER = logging.getLogger("vehicle-damage-api")
-app = FastAPI(title="Vehicle Damage Detection API", version="1.0.0")
+app = FastAPI(title="Vehicle Damage Detection API", version=MODEL_VERSION)
 
 
-def _validate_upload(file: UploadFile, payload: bytes):
-    ext = (file.filename or "").lower().rsplit(".", 1)[-1] if "." in (file.filename or "") else ""
+def _read_bounded_upload(file: UploadFile) -> bytes:
+    chunks = []
+    total = 0
+    chunk_size = 1024 * 1024
+    while True:
+        chunk = file.file.read(chunk_size)
+        if not chunk:
+            break
+        total += len(chunk)
+        if total > MAX_UPLOAD_BYTES:
+            raise HTTPException(
+                status_code=413,
+                detail=f"Image exceeds {MAX_UPLOAD_BYTES // (1024 * 1024)} MB limit.",
+            )
+        chunks.append(chunk)
+    return b"".join(chunks)
+
+
+def _validate_upload(file: UploadFile, payload: bytes) -> Image.Image:
+    filename = file.filename or ""
+    ext = filename.lower().rsplit(".", 1)[-1] if "." in filename else ""
     if ext not in ALLOWED_EXTENSIONS:
         raise HTTPException(status_code=415, detail="Unsupported image type. Use JPG, JPEG, PNG, or WEBP.")
-    if len(payload) > MAX_UPLOAD_BYTES:
-        raise HTTPException(status_code=413, detail=f"Image exceeds {MAX_UPLOAD_BYTES // (1024 * 1024)} MB limit.")
+    if not payload:
+        raise HTTPException(status_code=400, detail="Uploaded file is empty.")
     try:
-        img = Image.open(BytesIO(payload))
-        img.verify()
-        img = Image.open(BytesIO(payload)).convert("RGB")
+        with Image.open(BytesIO(payload)) as img:
+            img.verify()
+        with Image.open(BytesIO(payload)) as img:
+            return img.convert("RGB")
     except (UnidentifiedImageError, OSError, ValueError) as exc:
         raise HTTPException(status_code=400, detail="Invalid or corrupt image file.") from exc
-    return img
 
 
 @app.get("/health")
 def health():
-    return {"status": "ok", "model_configured": bool(MODEL_PATH.exists() or MODEL_URL), "classes": len(load_class_names(CLASS_NAMES_PATH))}
+    return {
+        "status": "ok",
+        "model_configured": bool(MODEL_PATH.exists() or MODEL_URL),
+        "classes": len(load_class_names(CLASS_NAMES_PATH)),
+        "model_version": MODEL_VERSION,
+    }
+
+
+@app.get("/ready")
+def ready():
+    """Readiness probe that verifies the model can actually be loaded."""
+    try:
+        model = get_model()
+        classes = load_class_names(CLASS_NAMES_PATH)
+        output_shape = tuple(model.output_shape)
+        if len(output_shape) != 2 or output_shape[-1] != len(classes):
+            raise ValueError(f"Model output {output_shape} does not match {len(classes)} classes")
+        return {"status": "ready", "model_version": MODEL_VERSION, "output_shape": output_shape}
+    except Exception as exc:  # noqa: BLE001 -- readiness must report failure without crashing the server
+        raise HTTPException(status_code=503, detail=f"Model is not ready: {exc}") from exc
 
 
 @app.get("/monitoring/summary")
 def monitoring_summary(bucket_seconds: int = 3600):
-    """Aggregated view of logged predictions for the Streamlit monitoring tab:
-    prediction volume and average confidence per time bucket, plus a
-    per-class count. Reads app/monitoring.py's JSONL log rather than a
-    database, matching the rest of this project's no-extra-infra approach."""
-    return summarize_predictions(bucket_seconds=bucket_seconds)
+    try:
+        return summarize_predictions(bucket_seconds=bucket_seconds)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
 @app.post("/predict")
 async def predict_endpoint(file: UploadFile = File(...)):  # noqa: B008 -- standard FastAPI DI pattern
-    payload = await file.read()
+    payload = _read_bounded_upload(file)
     image = _validate_upload(file, payload)
     try:
         classes = load_class_names(CLASS_NAMES_PATH)
         result = predict(image, classes)
+        result["model_version"] = MODEL_VERSION
         log_prediction(result)
         return result
     except FileNotFoundError as exc:
         LOGGER.exception("Model artifact missing")
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except ValueError as exc:
+        LOGGER.exception("Model contract or inference validation failed")
         raise HTTPException(status_code=503, detail=str(exc)) from exc
     except Exception as exc:
         LOGGER.exception("Prediction failed")
