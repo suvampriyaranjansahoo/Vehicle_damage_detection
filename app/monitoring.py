@@ -1,6 +1,7 @@
 import json
 import time
 from collections import Counter
+from pathlib import Path
 
 from .config import PREDICTION_LOG_PATH
 
@@ -55,14 +56,7 @@ def summarize_predictions(bucket_seconds: int = 3600, limit: int = 5000) -> dict
         raise ValueError("bucket_seconds must be between 60 seconds and 7 days")
     records = read_predictions(limit=limit)
     if not records:
-        return {
-            "total_predictions": 0,
-            "review_recommended": 0,
-            "avg_confidence": None,
-            "avg_latency_ms": None,
-            "buckets": [],
-            "class_counts": {},
-        }
+        return {"total_predictions": 0, "review_recommended": 0, "avg_confidence": None, "avg_latency_ms": None, "buckets": [], "class_counts": {}}
 
     class_counts = Counter(r["predicted_class"] for r in records)
     review_count = sum(bool(r.get("review_recommended", False)) for r in records)
@@ -74,17 +68,12 @@ def summarize_predictions(bucket_seconds: int = 3600, limit: int = 5000) -> dict
 
     buckets = []
     for bucket_start, bucket_records in sorted(bucketed.items()):
-        buckets.append(
-            {
-                "bucket_start": bucket_start,
-                "count": len(bucket_records),
-                "avg_confidence": round(sum(r["confidence"] for r in bucket_records) / len(bucket_records), 4),
-                "review_rate": round(
-                    sum(bool(r.get("review_recommended", False)) for r in bucket_records) / len(bucket_records),
-                    4,
-                ),
-            }
-        )
+        buckets.append({
+            "bucket_start": bucket_start,
+            "count": len(bucket_records),
+            "avg_confidence": round(sum(r["confidence"] for r in bucket_records) / len(bucket_records), 4),
+            "review_rate": round(sum(bool(r.get("review_recommended", False)) for r in bucket_records) / len(bucket_records), 4),
+        })
 
     return {
         "total_predictions": len(records),

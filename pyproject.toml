@@ -1,8 +1,0 @@
-[tool.ruff]
-line-length = 160
-target-version = "py311"
-extend-exclude = ["artifacts", "data", ".venv", "venv"]
-
-[tool.ruff.lint]
-select = ["E", "F", "W", "B"]
-ignore = ["E501", "B008", "BLE001"]
