@@ -1,6 +1,8 @@
 # Vehicle Damage Detection — Deployable Computer Vision Service
 
-A production-oriented vehicle-damage classifier built around a MobileNetV2 transfer-learning model. The project separates training, inference, API, and UI so the model can be served independently from the frontend.
+A portfolio/demo vehicle-damage classifier built around a MobileNetV2 transfer-learning model. The project separates training, inference, API, and UI so the model can be served independently from the frontend.
+
+> **Project status:** This is a well-documented prototype, not an inspection product. The served model scored 78.3% on a 143-image held-out test set; it only predicts one of seven damage labels, even when the image is out of scope. Confidence checks can request human review, but they are not a validated unknown-image detector. The severity and cost outputs are illustrative heuristics. See the [9.5/10 portfolio roadmap](docs/PORTFOLIO_ROADMAP.md) for concrete next steps and evidence required.
 
 > **Dataset:** `data/data.csv` + `data/image/` is the [Car Damage Assessment dataset](https://www.kaggle.com/datasets/hamzamanssor/car-damage-assessment) on Kaggle -- identified by exact row-count and class-distribution match against a public project built on the same source. Images are included in this package.
 
@@ -12,7 +14,7 @@ Given a vehicle image, classify visible damage and expose an explainable predict
 ## Classes
 The served model predicts 7 damage classes: `bumper_dent`, `bumper_scratch`, `door_dent`, `door_scratch`, `glass_shatter`, `head_lamp`, `tail_lamp`.
 
-The raw CSV has an 8th class, `unknown` (549/1,594 rows, 34.4%) -- not a damage type, just "no clear damage visible." `scripts/preprocess_dataset.py --drop-unknown` removes it before training, on the reasoning that a class that isn't a damage category dilutes what the model is actually trying to discriminate between. The results below reflect that choice; `data/data.csv` (all 8 classes, undeduplicated) is still there if you want to train on it for comparison.
+The raw CSV has an 8th class, `unknown` (549/1,594 rows, 34.4%) -- not a damage type, just "no clear damage visible." `scripts/preprocess_dataset.py --drop-unknown` removes it before training. As a result, the served model always returns one of the seven damage labels; it does not currently have a trained unknown/no-damage class or a validated open-set rejection mechanism. The results below reflect that choice; `data/data.csv` (all 8 classes, undeduplicated) is still there for comparison.
 
 ## Results
 
