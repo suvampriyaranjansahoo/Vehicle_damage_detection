@@ -1,4 +1,4 @@
-# Vehicle Damage Detection — Deployable Computer Vision Service
+ Vehicle Damage Detection — Deployable Computer Vision Service
 
 A production-oriented vehicle-damage classifier built around a MobileNetV2 transfer-learning model. The project separates training, inference, API, and UI so the model can be served independently from the frontend.
 
